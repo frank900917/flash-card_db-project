@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\User;
+
+class UserRepository
+{
+    protected $user;
+
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
+    public function createUser($data)
+    {
+        $created = $this->user->create($data);
+        return [
+            'id' => $created->id
+        ];
+    }
+
+    public function updateUserPassword($data)
+    {
+        $this->user->update($data);
+    }
+}

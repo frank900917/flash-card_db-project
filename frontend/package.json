@@ -1,0 +1,24 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.8",
+    "nuxt": "^4.2.1",
+    "sass": "^1.94.2",
+    "vue": "^3.5.13",
+    "vue-router": "^4.6.3"
+  },
+  "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
+    "nuxt-auth-sanctum": "^0.6.7"
+  }
+}
