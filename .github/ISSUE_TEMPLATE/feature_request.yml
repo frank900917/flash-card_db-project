@@ -3,14 +3,6 @@ description: "提出新功能需求"
 title: "[Feature] "
 assignees: []
 body:
-  - type: input
-    id: title
-    attributes:
-      label: 功能標題
-      placeholder: "請輸入功能標題"
-    validations:
-      required: true
-
   - type: textarea
     id: description
     attributes:
@@ -32,13 +24,5 @@ body:
     attributes:
       label: 相關資料
       description: "可附上文件、設計稿等"
-    validations:
-      required: false
-
-  - type: input
-    id: assignees
-    attributes:
-      label: Assignees
-      placeholder: "請填寫負責人（GitHub ID）"
     validations:
       required: false

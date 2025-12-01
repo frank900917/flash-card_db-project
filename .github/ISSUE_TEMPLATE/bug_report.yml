@@ -3,14 +3,6 @@ description: "回報錯誤或異常狀況"
 title: "[Bug] "
 assignees: []
 body:
-  - type: input
-    id: title
-    attributes:
-      label: 錯誤標題
-      placeholder: "請輸入錯誤標題"
-    validations:
-      required: true
-
   - type: textarea
     id: description
     attributes:
@@ -40,13 +32,5 @@ body:
     attributes:
       label: 補充資訊
       description: "可提供截圖等資料"
-    validations:
-      required: false
-
-  - type: input
-    id: assignees
-    attributes:
-      label: Assignees
-      placeholder: "請填寫負責人（GitHub ID）"
     validations:
       required: false
