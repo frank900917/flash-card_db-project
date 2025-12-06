@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Theme;
+use App\Models\LevelExpMap;
 use App\Models\FlashCardSet;
 use App\Models\FlashCardSetDetail;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -43,5 +45,35 @@ class DatabaseSeeder extends Seeder
                             'isPublic' => true
                         ]);
         });
+
+        Theme::factory()
+            ->count(10)
+            ->sequence(
+                ['unlock_level' => 1],
+                ['unlock_level' => 2],
+                ['unlock_level' => 3],
+                ['unlock_level' => 4],
+                ['unlock_level' => 5],
+                ['unlock_level' => 6],
+                ['unlock_level' => 7],
+                ['unlock_level' => 8],
+                ['unlock_level' => 9],
+                ['unlock_level' => 10],
+            )
+            ->create();
+
+            $maxLevel = 10;
+            $needExp = 0;
+        
+        for ($level = 1; $level <= $maxLevel; $level++) {
+            $needExp += 1000 * ($level - 1);
+
+            LevelExpMap::create([
+                'level' => $level,
+                'exp' => $needExp,
+                'name' => '初心者 ' . $level,
+                'desc' => '努力的初心者' . $level,
+            ]);
+        }
     }
 }
