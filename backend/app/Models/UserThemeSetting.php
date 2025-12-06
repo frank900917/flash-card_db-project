@@ -5,19 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Theme extends Model
+class UserThemeSetting extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'bg_color',
-        'desc',
-        'unlock_level',
+        'user_id',
+        'theme_id',
+        'flash_card_set_id',
     ];
 
-    public function userThemeSetting()
+    public function theme()
     {
-        return $this->hasMany(UserThemeSetting::class);
+        return $this->belongsTo(Theme::class);
     }
 }

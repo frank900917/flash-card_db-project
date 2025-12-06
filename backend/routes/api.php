@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\FlashCardSetController;
+use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\GoogleTTSController;
+use App\Http\Controllers\FlashCardSetController;
 
 Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
 Route::post('/register', [AuthController::class, 'register']);
@@ -17,6 +18,15 @@ Route::prefix('flashCard')->group(function () {
     Route::get('/{id}', [FlashCardSetController::class, 'show']);
     Route::get('/details/{id}', [FlashCardSetController::class, 'showDetails']);
     Route::get('/edit/{id}', [FlashCardSetController::class, 'edit'])->middleware('auth:sanctum');
+
+    # TODO: get card theme
+    # TODO: 單字集建立當下 UserThemeSetting 要帶入level 0 的theme
+    Route::get('/current-theme/{id}', [ThemeController::class, 'getCurrentTheme'])->middleware('auth:sanctum');
+    # TODO: get theme list
+    # {theme: [{name, bg_color, desc, need_exp, T/F}]}
+    Route::get('/theme-list', [ThemeController::class, 'getThemeList'])->middleware('auth:sanctum');
+    # TODO: update theme
+    Route::put('/update-theme/{id}', [ThemeController::class, 'updateTheme'])->middleware('auth:sanctum');
 });
 
 Route::prefix('google-tts')->group(function () {
