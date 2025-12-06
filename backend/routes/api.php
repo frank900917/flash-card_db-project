@@ -20,13 +20,12 @@ Route::prefix('flashCard')->group(function () {
     Route::get('/edit/{id}', [FlashCardSetController::class, 'edit'])->middleware('auth:sanctum');
 
     # TODO: get card theme
-    # TODO: 單字集建立當下 UserThemeSetting 要帶入level 0 的theme
-    Route::get('/current-theme/{id}', [ThemeController::class, 'getCurrentTheme'])->middleware('auth:sanctum');
+    Route::get('/{flashCardId}/theme', [ThemeController::class, 'getCurrentTheme'])->middleware('auth:sanctum');
     # TODO: get theme list
-    # {theme: [{name, bg_color, desc, need_exp, T/F}]}
-    Route::get('/theme-list', [ThemeController::class, 'getThemeList'])->middleware('auth:sanctum');
+    Route::get('/theme', [ThemeController::class, 'getThemeList'])->middleware('auth:sanctum');
     # TODO: update theme
-    Route::put('/update-theme/{id}', [ThemeController::class, 'updateTheme'])->middleware('auth:sanctum');
+    # put 時 body 要附上 {theme_id: XX}
+    Route::put('/{flashCardId}/theme', [ThemeController::class, 'updateTheme'])->middleware('auth:sanctum');
 });
 
 Route::prefix('google-tts')->group(function () {
