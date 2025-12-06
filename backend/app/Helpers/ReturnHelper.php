@@ -8,7 +8,7 @@ class ReturnHelper
         if ($result->result) {
             return response()->json(['result' => $result->result], $result->successState);
         } else {
-            return response()->json(['error' => 'Not Found'], $result->failState);
+            return response()->json(['error' => 'Error'], $result->failState);
         }
     }
 }

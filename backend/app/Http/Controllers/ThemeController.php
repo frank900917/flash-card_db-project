@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\ThemeService;
 use App\Helpers\ReturnHelper;
+use App\Services\ThemeService;
 
 class ThemeController extends Controller
 {
