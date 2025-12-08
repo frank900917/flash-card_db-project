@@ -5,12 +5,15 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\GoogleTTSController;
 use App\Http\Controllers\FlashCardSetController;
+use App\Http\Controllers\TestRecordController;
 
 Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+Route::post('/testRecord', [TestRecordController::class, 'store'])->middleware('auth:sanctum');
+Route::get('/testRecord', [TestRecordController::class, 'index'])->middleware('auth:sanctum');
 
 Route::apiResource('/flashCard', FlashCardSetController::class)->middleware('auth:sanctum')->except(['show']);
 Route::prefix('flashCard')->group(function () {

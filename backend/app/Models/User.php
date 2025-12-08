@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(FlashCardSet::class);
     }
+
+    public function testRecord()
+    {
+        return $this->hasMany(TestRecord::class);
+    }
 }
