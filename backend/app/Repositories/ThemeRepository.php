@@ -17,6 +17,18 @@ class ThemeRepository
         $this->userThemeSetting = $userThemeSetting;
     }
 
+    public function flashCardSetInit($userId, $flashCardId) {
+        $data = [
+            'user_id' => $userId,
+            'theme_id' => $this->theme->min('id'),
+            'flash_card_set_id' => $flashCardId,
+        ];
+
+        $newUserThemeSetting = $this->userThemeSetting->create($data);
+
+        return $newUserThemeSetting;
+    }
+
     public function getCurrentTheme($userId, $flashCardId) {
         return $this->userThemeSetting
                 ->with('theme')

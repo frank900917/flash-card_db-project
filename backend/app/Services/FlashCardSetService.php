@@ -3,17 +3,21 @@
 namespace App\Services;
 
 use App\Repositories\FlashCardSetRepository;
+use App\Repositories\ThemeRepository;
 use Illuminate\Support\Facades\Auth;
 
 class FlashCardSetService
 {
-    protected $flashCardRepository;
+    protected $flashCardRepository,
+              $themeRepository;
 
     public function __construct(
-        FlashCardSetRepository $flashCardRepository
+        FlashCardSetRepository $flashCardRepository,
+        ThemeRepository $themeRepository
     )
     {
         $this->flashCardRepository = $flashCardRepository;
+        $this->themeRepository = $themeRepository;
     }
 
     public function getFlashCardSetList($request)
@@ -34,6 +38,9 @@ class FlashCardSetService
             'isPublic' => $request['isPublic']
         ];
         $result = $this->flashCardRepository->createFlashCardSet($data);
+
+        $settingResult = $this->themeRepository->flashCardSetInit(Auth::id(), $result->id());
+
         // TODO: 改善單字批量寫入，參考 FlashCardSetFactory
         foreach ($request['details'] as $detail) {
             $result->details()->create([
