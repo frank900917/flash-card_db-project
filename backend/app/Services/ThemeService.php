@@ -21,7 +21,7 @@ class ThemeService
     public function getCurrentTheme(Request $request, $flashCardId) {
         $userId = $request->user()->id;
 
-        return ['result' => $this->userThemeRepository->getCurrentTheme($userId, $flashCardId),
+        return ['result' => $this->themeRepository->getCurrentTheme($userId, $flashCardId),
                 'successState' => 200,
                 'failState' => 404];
     }

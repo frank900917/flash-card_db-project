@@ -25,4 +25,11 @@ class UserRepository
     {
         $this->user->update($data);
     }
+
+    public function addExperience($exp) {
+        $this->user->exp += $exp;
+        $this->user->save();
+
+        return $this->user;
+    }
 }
