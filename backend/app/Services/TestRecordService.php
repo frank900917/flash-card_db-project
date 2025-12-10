@@ -3,17 +3,20 @@
 namespace App\Services;
 
 use App\Repositories\TestRecordRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 
 class TestRecordService
 {
-    protected $testRecordRepository;
+    protected $testRecordRepository, $userRepository;
 
     public function __construct(
-        TestRecordRepository $testRecordRepository
+        TestRecordRepository $testRecordRepository,
+        UserRepository $userRepository
     )
     {
         $this->testRecordRepository = $testRecordRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function createTestRecord($request)
@@ -25,6 +28,10 @@ class TestRecordService
             'correct_rate' => $request['correct_rate']
         ];
         $result = $this->testRecordRepository->createTestRecord($data);
+
+        $exp = round($request['correct_rate']);
+        $this->userRepository->addExperience($exp);
+
         if (!$result) {
             return ['message' => 'Failed'];
         }
