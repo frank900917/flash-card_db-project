@@ -39,7 +39,7 @@ class FlashCardSetService
         ];
         $result = $this->flashCardRepository->createFlashCardSet($data);
 
-        $settingResult = $this->themeRepository->flashCardSetInit(Auth::id(), $result->id());
+        $settingResult = $this->themeRepository->flashCardSetInit(Auth::id(), $result->id);
 
         // TODO: 改善單字批量寫入，參考 FlashCardSetFactory
         foreach ($request['details'] as $detail) {
