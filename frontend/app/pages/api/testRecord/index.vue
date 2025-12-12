@@ -2,6 +2,7 @@
     <form @submit.prevent="handleSubmit" class="border m-2 p-2">
         <div class="h5 text-center">寫入帳戶測驗紀錄</div>
         <input v-model="form.flash_card_set_id" type="number" name="setId" class="mx-1" placeholder="單字集 ID" required>
+        <input v-model="form.title" type="text" name="count" class="mx-1" placeholder="單字集標題" required></input>
         <input v-model="form.correct_count" type="text" name="count" class="mx-1" placeholder="答題數" required>
         <input v-model="form.correct_rate" type="number" name="rate" class="mx-1" placeholder="答題率" step="0.01" required>
         <button type="submit" class="mx-1">送出</button>
@@ -20,6 +21,7 @@ const { apiBase } = useRuntimeConfig().public;
 const { csrfURL } = useRuntimeConfig().public;
 const form = ref({
     flash_card_set_id: null,
+    title: '',
     correct_count: '',
     correct_rate: null
 });
