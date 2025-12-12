@@ -52,6 +52,6 @@ class UserService
         $data = [
             'password' => Hash::make($request->new_password)
         ];
-        $this->userRepository->updateUserPassword($data);
+        $this->userRepository->updateUserPassword($user, $data);
     }
 }

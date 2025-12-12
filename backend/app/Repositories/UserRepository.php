@@ -21,9 +21,9 @@ class UserRepository
         ];
     }
 
-    public function updateUserPassword($data)
+    public function updateUserPassword($user, $data)
     {
-        $this->user->update($data);
+        return $user->update($data);
     }
 
     public function addExperience($userId, $exp) {
