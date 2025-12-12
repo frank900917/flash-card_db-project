@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('test_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
-            $table->foreignIdFor(FlashCardSet::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(FlashCardSet::class)->nullable()->constrained()->nullOnDelete();
+            $table->string('title');
             $table->string('correct_count');
             $table->float('correct_rate');
             $table->timestamps();

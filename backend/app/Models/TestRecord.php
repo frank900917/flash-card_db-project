@@ -12,6 +12,7 @@ class TestRecord extends Model
     protected $fillable = [
         'user_id',
         'flash_card_set_id',
+        'title',
         'correct_count',
         'correct_rate'
     ];

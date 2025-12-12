@@ -375,9 +375,9 @@ onMounted(() => {
 // 取得單字集資料
 const { data: flashCardSet, error } = await useSanctumFetch(`${apiBase}/flashCard/${id}?&page=${page.value}&perPage=${perPage.value}`);
 if (error.value?.statusCode === 404) {
-    throw createError({ statusCode: 404, statusMessage: '此單字集不存在' });
+    throw createError({ statusCode: 404, message: '此單字集不存在' });
 } else if (error.value?.statusCode === 403) {
-    throw createError({ statusCode: 403, statusMessage: '此單字集為私人單字集' });
+    throw createError({ statusCode: 403, message: '此單字集為私人單字集' });
 }
 
 // 換頁更新單字集清單

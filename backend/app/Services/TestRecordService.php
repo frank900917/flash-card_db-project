@@ -24,13 +24,14 @@ class TestRecordService
         $data = [
             'user_id' => Auth::id(),
             'flash_card_set_id' => $request['flash_card_set_id'],
+            'title' => $request['title'],
             'correct_count' => $request['correct_count'],
             'correct_rate' => $request['correct_rate']
         ];
         $result = $this->testRecordRepository->createTestRecord($data);
 
         $exp = round($request['correct_rate']);
-        $this->userRepository->addExperience($exp);
+        $this->userRepository->addExperience(Auth::id(), $exp);
 
         if (!$result) {
             return ['message' => 'Failed'];
