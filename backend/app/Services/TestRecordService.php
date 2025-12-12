@@ -31,7 +31,7 @@ class TestRecordService
         $result = $this->testRecordRepository->createTestRecord($data);
 
         $exp = round($request['correct_rate']);
-        $this->userRepository->addExperience($exp);
+        $this->userRepository->addExperience(Auth::id(), $exp);
 
         if (!$result) {
             return ['message' => 'Failed'];
