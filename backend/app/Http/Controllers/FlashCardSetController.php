@@ -64,7 +64,7 @@ class FlashCardSetController extends Controller
         if ($result['message'] === 'Not Found') {
             return response()->json($result, 404);
         }
-        return response()->json($result, 200);
+        return response()->json($result['data'], 200);
     }
 
     // 編輯單字集

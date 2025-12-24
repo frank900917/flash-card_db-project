@@ -75,7 +75,11 @@ class FlashCardSetService
         if (!$set->isPublic && (!Auth::check() || Auth::id() !== $set->user_id)) {
             return ['message' => 'Forbidden'];
         }
-        return $this->flashCardRepository->getFlashCardSetDetails($set->id);
+        $details = $this->flashCardRepository->getFlashCardSetDetails($set->id);
+        return [
+            'message' => 'Success',
+            'data' => $details
+        ];
     }
 
     public function getUserFlashCardSet($id)
