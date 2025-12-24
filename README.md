@@ -28,7 +28,7 @@
 ### 1. 下載專案
 
 ```bash
-git clone https://github.com/frank900917/flash-card.git
+git clone https://github.com/frank900917/flash-card_db-project.git
 cd flash-card
 ```
 
@@ -93,3 +93,4 @@ npm run dev
 1. 前往 [Google Cloud Console](https://console.cloud.google.com/) 開啟 Text-to-Speech API。
 2. 建立服務帳戶，前往金鑰頁面建立新的金鑰。
 3. 將下載的服務帳戶金鑰保存在適當位置，並於 `backend\.env` 啟用 Google TTS 並設定完整憑證保存路徑。
+
