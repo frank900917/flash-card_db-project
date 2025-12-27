@@ -366,6 +366,7 @@ const errors = ref({});
 const { $bootstrap } = useNuxtApp();
 const { apiBase } = useRuntimeConfig().public;
 const { csrfURL } = useRuntimeConfig().public;
+const { refreshIdentity } = useSanctumAuth();
 
 onMounted(() => {
     // TTS 初始化
@@ -464,7 +465,7 @@ async function handleStartQuiz() {
 }
 
 // 結束測驗
-function handlefinishQuiz() {
+async function handlefinishQuiz() {
     let score = 0;
 
     quizData.value = quizData.value.map(item => {
@@ -514,7 +515,64 @@ function handlefinishQuiz() {
     correctCount.value = score;
     accuracyRate.value = ((score / quizData.value.length) * 100).toFixed(2);
 
+    if (user.value) 
+    {
+        const typeNameMap = {
+            word: '單字測驗',
+            description: '說明測驗',
+            listening: '聽力測驗'};
+        const currentTypeName = typeNameMap[quizType.value] || '測驗';
+        
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${(now.getDate().toString().padStart(2, '0'))} ${(now.getHours().toString().padStart(2, '0'))}:${(now.getMinutes().toString().padStart(2, '0'))}:${(now.getSeconds().toString().padStart(2, '0'))}`;
+        const quizTitle = `${flashCardSet.value.title} - ${currentTypeName} (${timeStr})`;
+
+        const payload = {
+            flash_card_set_id: Number(id),
+            title: quizTitle,
+            correct_count: String(score),
+            correct_rate: Number(accuracyRate.value)
+        };
+
+        await handleRecordSubmit(payload);
+    }
+
     quizState.value = 2;
+}
+
+async function handleRecordSubmit(payload)
+{
+    try 
+    {
+        await $fetch(csrfURL, { 
+            credentials: 'include' 
+        });
+
+        const xsrfToken = useCookie('XSRF-TOKEN').value;
+
+        const result = await $fetch(`${apiBase}/testRecord`, {
+            method: 'POST',
+            body: payload,
+            credentials: 'include',
+            headers: {
+                'X-XSRF-TOKEN': xsrfToken,
+                'Accept': 'application/json'
+            }
+        });
+
+        try 
+        {
+            await refreshIdentity(); 
+        } 
+        catch (err) 
+        {
+            alert('更新使用者資料失敗，請嘗試重新整理', err);
+        }
+    } 
+    catch (e) 
+    {
+        alert('上傳紀錄失敗:', e.response._data);
+    }
 }
 
 // 預設 TTS 設定
