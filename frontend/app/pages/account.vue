@@ -7,6 +7,8 @@
                     <div class="fw-bold">帳號：{{ user.username }}</div>
                     <div class="fw-bold">註冊時間：{{ formatDate(user.created_at) }}</div>
                     <div class="fw-bold">已建立單字集：{{ FlashCardLists.total }}</div>
+                    <div class="fw-bold">等級：{{ level?.result?.level_info?.name }}</div>
+                    <div class="fw-bold">經驗值: {{user.exp}}</div>
                 </div>
                 <NuxtLink to="/changePassword" class="btn btn-primary align-self-center mx-2 ms-auto">變更密碼</NuxtLink>
             </div>
@@ -47,6 +49,9 @@ const { apiBase } = useRuntimeConfig().public;
 
 // 獲取帳戶單字集清單
 const { data: FlashCardLists } = await useSanctumFetch(`${apiBase}/flashCard?page=${page.value}&perPage=${perPage.value}`);
+
+// 獲取使用者等級
+const { data: level } = await useSanctumFetch(`${apiBase}/levelExpMap`);
 
 // 更新單字集清單
 async function fetchFlashCardLists(isPerPage) {
