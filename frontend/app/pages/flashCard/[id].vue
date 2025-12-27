@@ -515,25 +515,27 @@ async function handlefinishQuiz() {
     correctCount.value = score;
     accuracyRate.value = ((score / quizData.value.length) * 100).toFixed(2);
 
-    const typeNameMap = {
-        word: '單字測驗',
-        description: '說明測驗',
-        listening: '聽力測驗'
-    };
-    const currentTypeName = typeNameMap[quizType.value] || '測驗';
-    
-    const now = new Date();
-    const timeStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${(now.getDate().toString().padStart(2, '0'))} ${(now.getHours().toString().padStart(2, '0'))}:${(now.getMinutes().toString().padStart(2, '0'))}:${(now.getSeconds().toString().padStart(2, '0'))}`;
-    const quizTitle = `${flashCardSet.value.title} - ${currentTypeName} (${timeStr})`;
+    if (user.value) 
+    {
+        const typeNameMap = {
+            word: '單字測驗',
+            description: '說明測驗',
+            listening: '聽力測驗'};
+        const currentTypeName = typeNameMap[quizType.value] || '測驗';
+        
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${(now.getDate().toString().padStart(2, '0'))} ${(now.getHours().toString().padStart(2, '0'))}:${(now.getMinutes().toString().padStart(2, '0'))}:${(now.getSeconds().toString().padStart(2, '0'))}`;
+        const quizTitle = `${flashCardSet.value.title} - ${currentTypeName} (${timeStr})`;
 
-    const payload = {
-        flash_card_set_id: Number(id),
-        title: quizTitle,
-        correct_count: String(score),
-        correct_rate: Number(accuracyRate.value)
-    };
+        const payload = {
+            flash_card_set_id: Number(id),
+            title: quizTitle,
+            correct_count: String(score),
+            correct_rate: Number(accuracyRate.value)
+        };
 
-    await handleRecordSubmit(payload);
+        await handleRecordSubmit(payload);
+    }
 
     quizState.value = 2;
 }
@@ -564,15 +566,12 @@ async function handleRecordSubmit(payload)
         } 
         catch (err) 
         {
-            console.alert('更新使用者資料失敗，請嘗試重新整理', err);
+            alert('更新使用者資料失敗，請嘗試重新整理', err);
         }
     } 
     catch (e) 
     {
-        console.alert('上傳紀錄失敗:', e);
-        if (e.response) {
-            console.error('錯誤詳情:', e.response._data);
-        }
+        alert('上傳紀錄失敗:', e.response._data);
     }
 }
 
