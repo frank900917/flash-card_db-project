@@ -11,6 +11,7 @@
                     <div class="fw-bold">經驗值: {{user.exp}}</div>
                 </div>
                 <NuxtLink to="/changePassword" class="btn btn-primary align-self-center mx-2 ms-auto">變更密碼</NuxtLink>
+                <NuxtLink to="/test-results" class="btn btn-secondary align-self-center mx-2">測驗結果</NuxtLink>
             </div>
         </div>
         <div class="d-flex">
