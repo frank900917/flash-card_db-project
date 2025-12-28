@@ -41,7 +41,7 @@
                     {{ r.title || '未命名' }}
                   </div>
                 </td>
-                <td class="text-center">{{ formatType(r.title) }}</td>
+                <td class="text-center">{{ r.type }}</td>
                 <td class="text-center"><span class="badge bg-light text-dark border">{{ r.flash_card_set_id }}</span></td>
                 <td class="text-center">{{ r.correct_count }}</td>
                 <td class="text-center">
@@ -98,17 +98,6 @@ async function fetchRecords(perPage) {
     console.error('fetchRecords error', e);
     error.value = e?.data?.message || e?.message || '讀取紀錄失敗';
   }
-}
-
-// 格式化測驗類型
-function formatType(title) {
-  if (!title) return '-';
-  const end = title.lastIndexOf('(');
-  const start = title.lastIndexOf('-', end);
-  if (start === -1 || end === -1) return '-';
-
-  const t = title.substring(start + 1, end).trim();
-  return t.slice(0, 2) || '-';
 }
 
 // 格式化答題率

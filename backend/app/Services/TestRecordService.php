@@ -25,6 +25,7 @@ class TestRecordService
             'user_id' => Auth::id(),
             'flash_card_set_id' => $request['flash_card_set_id'],
             'title' => $request['title'],
+            'type' => $request['type'],
             'correct_count' => $request['correct_count'],
             'correct_rate' => $request['correct_rate']
         ];

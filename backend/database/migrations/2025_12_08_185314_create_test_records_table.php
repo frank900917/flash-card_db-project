@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(FlashCardSet::class)->nullable()->constrained()->nullOnDelete();
             $table->string('title');
+            $table->string('type');
             $table->string('correct_count');
             $table->float('correct_rate');
             $table->timestamps();

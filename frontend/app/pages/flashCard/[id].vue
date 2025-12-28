@@ -517,24 +517,20 @@ async function handlefinishQuiz() {
 
     if (user.value) 
     {
-        const typeNameMap = {
-            word: '單字測驗',
-            description: '說明測驗',
-            listening: '聽力測驗'};
-        const currentTypeName = typeNameMap[quizType.value] || '測驗';
-        
-        const now = new Date();
-        const timeStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${(now.getDate().toString().padStart(2, '0'))} ${(now.getHours().toString().padStart(2, '0'))}:${(now.getMinutes().toString().padStart(2, '0'))}:${(now.getSeconds().toString().padStart(2, '0'))}`;
-        const quizTitle = `${flashCardSet.value.title} - ${currentTypeName} (${timeStr})`;
-
         const payload = {
             flash_card_set_id: Number(id),
-            title: quizTitle,
+            title: flashCardSet.value.title,
+            type: quizType.value,
             correct_count: String(score),
             correct_rate: Number(accuracyRate.value)
         };
-
         await handleRecordSubmit(payload);
+    }
+    else
+    {
+        // Todo : 提示登入後再上傳，並顯示跳轉登入頁面選項，先透過alert 提示未登入者，建議從登入測試按鈕著手。
+        // 原始建議 : 未登入使用者點擊測驗後，彈出視窗建議註冊登入後再測驗，並提供註冊登入跳轉按鈕、繼續測驗按鈕。
+        alert('測驗記錄僅限登入使用者上傳');
     }
 
     quizState.value = 2;
@@ -563,6 +559,7 @@ async function handleRecordSubmit(payload)
         try 
         {
             await refreshIdentity(); 
+            alert('測驗記錄上傳成功');
         } 
         catch (err) 
         {
