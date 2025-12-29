@@ -24,26 +24,32 @@
           <table class="table table-hover align-middle mb-0 text-nowrap">
             <thead class="table-light">
               <tr>
-                <th class="ps-4">編號</th>
+                <th class="text-center">編號</th>
                 <th>標題</th>
-                <th>單字集 ID</th>
-                <th>答對題數</th>
-                <th>答題率</th>
-                <th>測驗時間</th>
+                <th class="text-center">測驗類型</th>
+                <th class="text-center">單字集 ID</th>
+                <th class="text-center">答對題數</th>
+                <th class="text-center">答題率</th>
+                <th class="text-center">測驗時間</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="r in records" :key="r.id">
-                <td class="ps-4 text-muted">#{{ r.id }}</td>
-                <td class="fw-medium">{{ r.title || '未命名' }}</td>
-                <td><span class="badge bg-light text-dark border">{{ r.flash_card_set_id }}</span></td>
-                <td>{{ r.correct_count }}</td>
-                <td>
+                <td class="text-center text-muted">#{{ r.id }}</td>
+                <td class="fw-medium" style="max-width: 200px;">
+                  <div class="text-truncate" :title="r.title">
+                    {{ r.title || '未命名' }}
+                  </div>
+                </td>
+                <td class="text-center">{{ r.type }}</td>
+                <td class="text-center"><span class="badge bg-light text-dark border">{{ r.flash_card_set_id }}</span></td>
+                <td class="text-center">{{ r.correct_count }}</td>
+                <td class="text-center">
                   <span>
                     {{ formatRate(r.correct_rate) }}
                   </span>
                 </td>
-                <td class="text-secondary small">{{ formatDate(r.created_at) }}</td>
+                <td class="text-center text-secondary small">{{ formatDate(r.created_at) }}</td>
               </tr>
             </tbody>
           </table>
@@ -109,54 +115,6 @@ function formatDate(s) {
   try { return new Date(s).toLocaleString(); } catch { return s; }
 }
 
-// 發送 POST 請求儲存測驗紀錄
-async function postTestRecord(payload) {
-  try {
-    const { data } = await useSanctumFetch(`${apiBase}/testRecord`, {
-      method: 'POST',
-      body: payload
-    });
-    return data.value;
-  } catch (e) {
-    console.error('postTestRecord error', e);
-    throw e;
-  }
-}
-
-// 根據網址參數自動提交測驗結果
-async function autoSubmitFromQuery(q) {
-  autoSubmitting.value = true;
-  error.value = '';
-  success.value = false;
-  try {
-    const payload = {
-      flash_card_set_id: q.flash_card_set_id ? Number(q.flash_card_set_id) : null,
-      correct_count: q.correct_count !== undefined ? String(q.correct_count) : '',
-      correct_rate: q.correct_rate !== undefined ? Number(q.correct_rate) : 0
-    };
-    const res = await postTestRecord(payload);
-    // 成功時，後端會在 res.result 回傳建立的紀錄
-    if (res && res.result) {
-      // 結果可能是陣列或物件；統一取第一項
-      const created = Array.isArray(res.result) ? res.result[0] : res.result;
-      if (created) {
-        // 導向至建立的紀錄詳細頁面
-        success.value = true;
-        const id = created.id || created[0]?.id;
-        if (id) {
-          navigateTo(`/test-result/${id}`);
-          return;
-        }
-      }
-    }
-    success.value = true;
-  } catch (e) {
-    error.value = e?.data?.message || e?.message || '自動儲存失敗';
-  } finally {
-    autoSubmitting.value = false;
-    await fetchRecords();
-  }
-}
 
 // 初始載入
 await fetchRecords();

@@ -13,6 +13,7 @@ class TestRecord extends Model
         'user_id',
         'flash_card_set_id',
         'title',
+        'type',
         'correct_count',
         'correct_rate'
     ];
