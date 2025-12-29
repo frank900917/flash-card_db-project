@@ -814,6 +814,7 @@ const speak = (text) => {
     }
 };
 
+// 根據等級分組主題
 const groupedThemes = computed(() => {
     let source = themeList.value;
     if (selectedLevelFilter.value !== 'all') {
@@ -836,6 +837,7 @@ const groupedThemes = computed(() => {
     return Object.values(groups).sort((a, b) => a.level - b.level);
 });
 
+// 取得所有可用等級
 const availableLevels = computed(() => {
     const levels = [...new Set(themeList.value.map(t => t.unlock_level))];
     return levels.sort((a, b) => a - b);
@@ -912,7 +914,7 @@ async function applyTheme(theme) {
     }
 }
 
-// 回復預設主題
+// 恢復預設主題
 async function resetToDefault() {
     if (currentThemeColor.value.toLowerCase() === '#ffffff') 
     {
@@ -939,7 +941,7 @@ async function resetToDefault() {
     } 
     catch (e) 
     {
-        console.error('回復預設失敗', e);
+        console.error('恢復預設失敗', e);
     }
 }
 </script>
