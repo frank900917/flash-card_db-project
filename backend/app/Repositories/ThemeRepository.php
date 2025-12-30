@@ -29,10 +29,9 @@ class ThemeRepository
         return $newUserThemeSetting;
     }
 
-    public function getCurrentTheme($userId, $flashCardId) {
+    public function getCurrentTheme($flashCardId) {
         return $this->userThemeSetting
                 ->with('theme')
-                ->where('user_id', $userId)
                 ->where('flash_card_set_id', $flashCardId)
                 ->first()?->theme?->bg_color;
                 # TODO: 都找不到直接白: ?? '#FFFFFF;

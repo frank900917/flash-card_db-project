@@ -25,7 +25,7 @@ Route::prefix('flashCard')->group(function () {
     Route::get('/edit/{id}', [FlashCardSetController::class, 'edit'])->middleware('auth:sanctum');
 
     # TODO: get card theme
-    Route::get('/{flashCardId}/theme', [ThemeController::class, 'getCurrentTheme'])->middleware('auth:sanctum');
+    Route::get('/{flashCardId}/theme', [ThemeController::class, 'getCurrentTheme']);
     # TODO: get theme list
     Route::get('/theme', [ThemeController::class, 'getThemeList'])->middleware('auth:sanctum');
     # TODO: update theme

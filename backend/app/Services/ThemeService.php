@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Repositories\ThemeRepository;
 use App\Repositories\LevelExpMapRepository;
+use App\Repositories\FlashCardSetRepository;
 
 class ThemeService
 {
@@ -12,18 +13,27 @@ class ThemeService
 
     public function __construct(
         ThemeRepository $themeRepository,
-        LevelExpMapRepository $levelExpMapRepository
+        LevelExpMapRepository $levelExpMapRepository,
+        FlashCardSetRepository $flashCardSetRepository
     ) {
         $this->themeRepository = $themeRepository;
         $this->levelExpMapRepository = $levelExpMapRepository;
+        $this->flashCardSetRepository =$flashCardSetRepository;
     }
 
     public function getCurrentTheme(Request $request, $flashCardId) {
-        $userId = $request->user()->id;
-
-        return ['result' => $this->themeRepository->getCurrentTheme($userId, $flashCardId),
-                'successState' => 200,
-                'failState' => 404];
+        $userId = $request->user()?->id;
+        $is_public = $this->flashCardSetRepository->getFlashCardSet($flashCardId)->isPublic;
+        if (is_null($userId) && !$is_public) {
+            return ['result' => NULL,
+                    'successState' => 200,
+                    'failState' => 404];
+        }
+        else {
+            return ['result' => $this->themeRepository->getCurrentTheme($flashCardId),
+                    'successState' => 200,
+                    'failState' => 404];
+        }
     }
 
     public function getThemeList(Request $request) {
