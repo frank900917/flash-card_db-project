@@ -9,7 +9,7 @@ use App\Repositories\FlashCardSetRepository;
 
 class ThemeService
 {
-    protected $themeRepository, $levelExpMapRepository;
+    protected $themeRepository, $levelExpMapRepository, $flashCardSetRepository;
 
     public function __construct(
         ThemeRepository $themeRepository,
@@ -30,7 +30,7 @@ class ThemeService
                     'failState' => 404];
         }
         else {
-            return ['result' => $this->themeRepository->getCurrentTheme($flashCardId),
+            return ['result' => $this->themeRepository->getCurrentTheme($userId, $flashCardId),
                     'successState' => 200,
                     'failState' => 404];
         }
