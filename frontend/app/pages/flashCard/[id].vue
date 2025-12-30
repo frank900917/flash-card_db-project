@@ -35,7 +35,7 @@
         <div v-if="quizState === 0">
             <div class="d-flex align-items-center my-3 pb-2 border-bottom">
                 <h2 class="me-auto">單字列表</h2>
-                <button v-if="user.id === flashCardSet.user_id" class="btn btn-secondary" 
+                <button v-if="user?.id === flashCardSet.user_id" class="btn btn-secondary" 
                     @click="openThemeModal">更換主題</button>
                 <button class="btn btn-secondary m-2" data-bs-toggle="modal" data-bs-target="#ttsModal">語音設定</button>
                 <PaginationSizeSelector v-model="perPage" :onChange="fetchFlashCardSet" />
