@@ -35,6 +35,8 @@
         <div v-if="quizState === 0">
             <div class="d-flex align-items-center my-3 pb-2 border-bottom">
                 <h2 class="me-auto">單字列表</h2>
+                <button v-if="user?.id === flashCardSet.user_id" class="btn btn-secondary" 
+                    @click="openThemeModal">更換主題</button>
                 <button class="btn btn-secondary m-2" data-bs-toggle="modal" data-bs-target="#ttsModal">語音設定</button>
                 <PaginationSizeSelector v-model="perPage" :onChange="fetchFlashCardSet" />
             </div>
@@ -45,7 +47,7 @@
                     <div class="col-7 d-flex justify-content-center">說明</div>
                 </div>
                 <div v-for="(detail, index) in flashCardSet.details.data" :key="index"
-                    class="d-flex items-center my-2 border rounded-3">
+                    class="d-flex items-center my-2 border rounded-3" :style="{ backgroundColor: currentThemeColor}">
                     <div class="col-1 p-3 d-flex align-items-center justify-content-center">{{ index +
                         flashCardSet.details.from }}</div>
                     <div class="col-4 p-3 border-start d-flex align-items-center">
@@ -348,6 +350,88 @@
             </div>
         </div>
     </div>
+    <!-- 主題更改視窗 -->
+    <div class="modal fade" id="themeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg"> <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">選擇主題樣式</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <div class="modal-body p-0"> <div class="p-3 bg-light border-bottom sticky-top">
+                        <div class="d-flex align-items-center">
+                            <label for="levelSelect" class="form-label mb-0 me-3 fw-bold">篩選等級：</label>
+                            <select id="levelSelect" class="form-select w-auto" v-model="selectedLevelFilter">
+                                <option value="all">顯示全部等級</option>
+                                <option v-for="lv in availableLevels" :key="lv" :value="lv">
+                                    Lv.{{ lv }}
+                                </option>
+                            </select>
+                            <button class="btn btn-sm btn-secondary ms-auto me-2" @click="resetToDefault">
+                                恢復預設 (白)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex bg-white fw-bold border-bottom py-2 px-3 text-secondary small">
+                        <div class="col-2 text-center">編號</div>
+                        <div class="col-2 text-center">預覽</div>
+                        <div class="col-6">主題名稱</div>
+                        <div class="col-2 text-center">狀態</div>
+                    </div>
+
+                    <div style="max-height: 60vh; overflow-y: auto;">
+                        
+                        <div v-for="group in groupedThemes" :key="group.level">
+                            
+                            <div class="px-3 py-2 fw-bold border-bottom bg-light d-flex align-items-center"
+                                :class="group.isLocked ? 'text-danger' : 'text-primary'">
+                                <span class="me-2">Lv.{{ group.level }}</span>
+                                <span v-if="group.isLocked" class="badge bg-danger rounded-pill x-small">未解鎖</span>
+                                <span v-else class="badge bg-success rounded-pill x-small">已解鎖</span>
+                            </div>
+
+                            <div v-for="theme in group.themes" :key="theme.id" 
+                                class="d-flex align-items-center py-2 px-3 border-bottom theme-row"
+                                :class="{ 'bg-primary-subtle': currentThemeColor === theme.bg_color, 'opacity-50': !theme.activate }"
+                                style="cursor: pointer;"
+                                @click="applyTheme(theme)">
+                                
+                                <div class="col-2 text-center text-muted small">{{ theme.id }}</div>
+                                
+                                <div class="col-2 d-flex justify-content-center">
+                                    <div class="border rounded shadow-sm" 
+                                        :style="{ width: '40px', height: '25px', backgroundColor: theme.bg_color }">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-6 fw-bold">
+                                    {{ theme.name }}
+                                </div>
+                                
+                                <div class="col-2 text-center">
+                                    <span v-if="currentThemeColor === theme.bg_color" class="text-primary fw-bold">
+                                        <i class="bi bi-check-circle-fill"></i> 使用中
+                                    </span>
+                                    <span v-else-if="!theme.activate" class="btn btn-sm btn-outline-danger py-0" disabled>
+                                        未解鎖
+                                    </span>
+                                    <span v-else class="btn btn-sm btn-outline-primary py-0">
+                                        套用
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div v-if="groupedThemes.length === 0" class="text-center py-5 text-muted">
+                            沒有符合條件的主題
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -363,6 +447,10 @@ const quizType = ref('');
 const correctCount = ref(0);
 const accuracyRate = ref(0);
 const errors = ref({});
+const currentThemeColor = ref('#FFFFFF');
+const themeList = ref([]);
+const showThemeModal = ref(false);
+const selectedLevelFilter = ref('all');
 const { $bootstrap } = useNuxtApp();
 const { apiBase } = useRuntimeConfig().public;
 const { csrfURL } = useRuntimeConfig().public;
@@ -725,4 +813,135 @@ const speak = (text) => {
         webTTSSpeak(text, ttsSettings.value.lang, ttsSettings.value.speed);
     }
 };
+
+// 根據等級分組主題
+const groupedThemes = computed(() => {
+    let source = themeList.value;
+    if (selectedLevelFilter.value !== 'all') {
+        source = source.filter(t => t.unlock_level === Number(selectedLevelFilter.value));
+    }
+
+    const groups = source.reduce((acc, theme) => {
+        const lv = theme.unlock_level;
+        if (!acc[lv]) {
+            acc[lv] = {
+                level: lv,
+                isLocked: !theme.activate, 
+                themes: []
+            };
+        }
+        acc[lv].themes.push(theme);
+        return acc;
+    }, {});
+
+    return Object.values(groups).sort((a, b) => a.level - b.level);
+});
+
+// 取得所有可用等級
+const availableLevels = computed(() => {
+    const levels = [...new Set(themeList.value.map(t => t.unlock_level))];
+    return levels.sort((a, b) => a - b);
+});
+
+// 取得當前主題顏色
+const { data: themeColorData } = await useSanctumFetch(`${apiBase}/flashCard/${id}/theme`);
+
+if (themeColorData.value?.result) 
+{
+    currentThemeColor.value = themeColorData.value.result;
+}
+
+// 開啟主題更改視窗
+async function openThemeModal() {
+    try 
+    {
+        const data = await $fetch(`${apiBase}/flashCard/theme`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        if (data?.result) 
+        {
+            themeList.value = data.result;
+            
+            const modal = new $bootstrap.Modal(document.getElementById('themeModal'));
+            modal.show();
+        }
+    } 
+    catch (e) 
+    {
+        alert('載入主題列表失敗', e);
+    }
+}
+
+// 使用者點選某個主題
+async function applyTheme(theme) {
+    if (!theme.activate) 
+    {
+        alert(`等級不足！需要 Lv.${theme.unlock_level} 才能使用`);
+        return;
+    }
+    else if (currentThemeColor.value === theme.bg_color) 
+    {
+        alert('目前已使用此主題');
+        return;
+    }
+
+    try 
+    {
+        await $fetch(`${apiBase}/flashCard/${id}/theme`, {
+            method: 'PUT',
+            body: { theme_id: theme.id },
+            credentials: 'include',
+            headers: {
+                'X-XSRF-TOKEN': useCookie('XSRF-TOKEN').value,
+                'Accept': 'application/json'
+            }
+        });
+
+        currentThemeColor.value = theme.bg_color;
+        
+        const modalEl = document.getElementById('themeModal');
+        const modalInstance = $bootstrap.Modal.getInstance(modalEl);
+        modalInstance.hide();
+    } 
+    catch (e) 
+    {
+        console.error('更換主題失敗', e);
+    }
+}
+
+// 恢復預設主題
+async function resetToDefault() {
+    if (currentThemeColor.value.toLowerCase() === '#ffffff') 
+    {
+        alert('目前已是預設主題');
+        return;
+    }
+
+    try 
+    {
+        await $fetch(`${apiBase}/flashCard/${id}/theme`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                'X-XSRF-TOKEN': useCookie('XSRF-TOKEN').value,
+                'Accept': 'application/json'
+            }
+        });
+
+        currentThemeColor.value = '#FFFFFF';
+        
+        const modalEl = document.getElementById('themeModal');
+        const modalInstance = $bootstrap.Modal.getInstance(modalEl);
+        modalInstance.hide();
+    } 
+    catch (e) 
+    {
+        console.error('恢復預設失敗', e);
+    }
+}
 </script>
