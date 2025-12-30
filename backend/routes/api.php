@@ -20,14 +20,19 @@ Route::get('/levelExpMap', [LevelExpMapController::class, 'getUserLevel'])->midd
 Route::apiResource('/flashCard', FlashCardSetController::class)->middleware('auth:sanctum')->except(['show']);
 Route::prefix('flashCard')->group(function () {
     Route::get('/public', [FlashCardSetController::class, 'publicIndex']);
-    Route::get('/theme', [ThemeController::class, 'getThemeList'])->middleware('auth:sanctum');
+    
     Route::get('/theme/settings', [ThemeController::class, 'getUserThemeSettings'])->middleware('auth:sanctum');
 
     Route::get('/{id}', [FlashCardSetController::class, 'show']);
     Route::get('/details/{id}', [FlashCardSetController::class, 'showDetails']);
     Route::get('/edit/{id}', [FlashCardSetController::class, 'edit'])->middleware('auth:sanctum');
 
-    Route::get('/{flashCardId}/theme', [ThemeController::class, 'getCurrentTheme'])->middleware('auth:sanctum');
+    # TODO: get card theme
+    Route::get('/{flashCardId}/theme', [ThemeController::class, 'getCurrentTheme']);
+    # TODO: get theme list
+    Route::get('/theme', [ThemeController::class, 'getThemeList'])->middleware('auth:sanctum');
+    # TODO: update theme
+    # put 時 body 要附上 {theme_id: XX}
     Route::put('/{flashCardId}/theme', [ThemeController::class, 'updateTheme'])->middleware('auth:sanctum');
     Route::delete('/{flashCardId}/theme', [ThemeController::class, 'resetTheme'])->middleware('auth:sanctum');
 });
