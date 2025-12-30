@@ -17,13 +17,13 @@ class ThemeController extends Controller
     public function getCurrentTheme(Request $request, $flashCardId) {
         $result = $this->themeService->getCurrentTheme($request, $flashCardId);
 
-        return ReturnHelper::controllerReturn($result);
+        return ReturnHelper::controllerReturn((object)$result);
     }
 
     public function getThemeList(Request $request) {
         $result = $this->themeService->getThemeList($request);
 
-        return ReturnHelper::controllerReturn($result);
+        return ReturnHelper::controllerReturn((object)$result);
     }
 
     public function updateTheme(Request $request, $flashCardId) {   
@@ -34,6 +34,12 @@ class ThemeController extends Controller
 
         $result = $this->themeService->updateTheme($request, $flashCardId, $themeId);
 
-        return ReturnHelper::controllerReturn($result);
+        return ReturnHelper::controllerReturn((object)$result);
+    }
+
+    public function resetTheme(Request $request, $flashCardId) {
+        $result = $this->themeService->resetTheme($request, $flashCardId);
+        
+        return ReturnHelper::controllerReturn((object)$result);
     }
 }

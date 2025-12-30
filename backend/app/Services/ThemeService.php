@@ -47,9 +47,10 @@ class ThemeService
         if (!$themeList) {
             return ['result' => null, 'failState' => 500];
         }
-
-        $themeList = $themeList->map(function ($theme) use ($userLevel) {
-            $isActivate = ($theme->unlock_level <= $userLevel);
+        
+        $currentLevel = $userLevel->level;
+        $themeList = $themeList->map(function ($theme) use ($currentLevel) {
+            $isActivate = ($theme->unlock_level <= $currentLevel);
             $themeArray = $theme->toArray();
             unset($themeArray['created_at']);
             unset($themeArray['updated_at']);
@@ -76,5 +77,16 @@ class ThemeService
         return ['result' => $this->themeRepository->updateTheme($user->id, $flashCardId, $themeId),
                 'successState' => 200,
                 'failState' => 403];
+    }
+
+    public function resetTheme(Request $request, $flashCardId) {
+        $user = $request->user();
+        $this->themeRepository->resetTheme($user->id, $flashCardId);
+
+        return [
+            'result' => 'Reset Success', 
+            'successState' => 200,
+            'failState' => 500 
+        ];
     }
 }

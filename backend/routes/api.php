@@ -20,6 +20,9 @@ Route::get('/levelExpMap', [LevelExpMapController::class, 'getUserLevel'])->midd
 Route::apiResource('/flashCard', FlashCardSetController::class)->middleware('auth:sanctum')->except(['show']);
 Route::prefix('flashCard')->group(function () {
     Route::get('/public', [FlashCardSetController::class, 'publicIndex']);
+    
+    Route::get('/theme/settings', [ThemeController::class, 'getUserThemeSettings'])->middleware('auth:sanctum');
+
     Route::get('/{id}', [FlashCardSetController::class, 'show']);
     Route::get('/details/{id}', [FlashCardSetController::class, 'showDetails']);
     Route::get('/edit/{id}', [FlashCardSetController::class, 'edit'])->middleware('auth:sanctum');
@@ -31,6 +34,7 @@ Route::prefix('flashCard')->group(function () {
     # TODO: update theme
     # put 時 body 要附上 {theme_id: XX}
     Route::put('/{flashCardId}/theme', [ThemeController::class, 'updateTheme'])->middleware('auth:sanctum');
+    Route::delete('/{flashCardId}/theme', [ThemeController::class, 'resetTheme'])->middleware('auth:sanctum');
 });
 
 Route::prefix('google-tts')->group(function () {
