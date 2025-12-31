@@ -30,11 +30,19 @@ class ThemeRepository
     }
 
     public function getCurrentTheme($userId, $flashCardId) {
-        $setting = $this->userThemeSetting
-                    ->with('theme')
-                    ->where('user_id', $userId)
-                    ->where('flash_card_set_id', $flashCardId)
-                    ->first();
+        if ($userId) {
+            $setting = $this->userThemeSetting
+                        ->with('theme')
+                        ->where('user_id', $userId)
+                        ->where('flash_card_set_id', $flashCardId)
+                        ->first();
+        }
+        else {
+            $setting = $this->userThemeSetting
+                        ->with('theme')
+                        ->where('flash_card_set_id', $flashCardId)
+                        ->first();
+        }
 
         # 如果有設定，回傳設定的顏色；如果沒有，回傳預設白色
         return $setting ? $setting->theme->bg_color : '#FFFFFF';
@@ -61,12 +69,5 @@ class ThemeRepository
             $this->flashCardSetInit($userId, $flashCardId);
             return 'success';
         }
-    }
-
-    public function resetTheme($userId, $flashCardId) {
-        return $this->userThemeSetting
-            ->where('user_id', $userId)
-            ->where('flash_card_set_id', $flashCardId)
-            ->delete();
     }
 }

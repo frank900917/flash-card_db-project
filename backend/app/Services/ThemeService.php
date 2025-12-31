@@ -23,9 +23,8 @@ class ThemeService
 
     public function getCurrentTheme(Request $request, $flashCardId) {
         $userId = $request->user()?->id;
-        $is_public = $this->flashCardSetRepository->getFlashCardSet($flashCardId)->isPublic;
-        if (is_null($userId) && !$is_public) {
-            return ['result' => NULL,
+        if (is_null($userId)) {
+            return ['result' => $this->themeRepository->getCurrentTheme(null, $flashCardId),
                     'successState' => 200,
                     'failState' => 404];
         }
@@ -67,26 +66,19 @@ class ThemeService
         $theme = $this->themeRepository->getTheme($themeId);
 
         if (!$theme) {
-            return ['result' => null, 'failState' => 404];
+            return ['result' => 'Theme not found', 'failState' => 404];
         }
 
-        if ($theme->unlock_level > $user->exp) {
-            return ['result' => null, 'failState' => 403];
+        if ($theme->unlock_level > (int)$user->exp) {
+            return ['result' => 'Level not enough', 'failState' => 403];
         }
 
-        return ['result' => $this->themeRepository->updateTheme($user->id, $flashCardId, $themeId),
-                'successState' => 200,
-                'failState' => 403];
-    }
-
-    public function resetTheme(Request $request, $flashCardId) {
-        $user = $request->user();
-        $this->themeRepository->resetTheme($user->id, $flashCardId);
+        $this->themeRepository->updateTheme($user->id, $flashCardId, $themeId);
 
         return [
-            'result' => 'Reset Success', 
+            'result' => 'success',
             'successState' => 200,
-            'failState' => 500 
+            'failState' => 403
         ];
     }
 }

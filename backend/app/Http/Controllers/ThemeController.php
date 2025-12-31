@@ -36,10 +36,4 @@ class ThemeController extends Controller
 
         return ReturnHelper::controllerReturn((object)$result);
     }
-
-    public function resetTheme(Request $request, $flashCardId) {
-        $result = $this->themeService->resetTheme($request, $flashCardId);
-        
-        return ReturnHelper::controllerReturn((object)$result);
-    }
 }

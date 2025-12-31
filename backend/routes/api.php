@@ -34,7 +34,6 @@ Route::prefix('flashCard')->group(function () {
     # TODO: update theme
     # put 時 body 要附上 {theme_id: XX}
     Route::put('/{flashCardId}/theme', [ThemeController::class, 'updateTheme'])->middleware('auth:sanctum');
-    Route::delete('/{flashCardId}/theme', [ThemeController::class, 'resetTheme'])->middleware('auth:sanctum');
 });
 
 Route::prefix('google-tts')->group(function () {

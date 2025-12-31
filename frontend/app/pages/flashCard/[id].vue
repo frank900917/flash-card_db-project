@@ -367,9 +367,6 @@
                                     Lv.{{ lv }}
                                 </option>
                             </select>
-                            <button class="btn btn-sm btn-secondary ms-auto me-2" @click="resetToDefault">
-                                恢復預設 (白)
-                            </button>
                         </div>
                     </div>
 
@@ -393,7 +390,7 @@
 
                             <div v-for="theme in group.themes" :key="theme.id" 
                                 class="d-flex align-items-center py-2 px-3 border-bottom theme-row"
-                                :class="{ 'bg-primary-subtle': currentThemeColor === theme.bg_color, 'opacity-50': !theme.activate }"
+                                :class="{ 'bg-primary-subtle': currentThemeColor === theme.bg_color + '4D', 'opacity-50': !theme.activate }"
                                 style="cursor: pointer;"
                                 @click="applyTheme(theme)">
                                 
@@ -447,7 +444,7 @@ const quizType = ref('');
 const correctCount = ref(0);
 const accuracyRate = ref(0);
 const errors = ref({});
-const currentThemeColor = ref('#FFFFFF');
+const currentThemeColor = ref('#FFFFFFFF');
 const themeList = ref([]);
 const showThemeModal = ref(false);
 const selectedLevelFilter = ref('all');
@@ -848,7 +845,7 @@ const { data: themeColorData } = await useSanctumFetch(`${apiBase}/flashCard/${i
 
 if (themeColorData.value?.result) 
 {
-    currentThemeColor.value = themeColorData.value.result;
+    currentThemeColor.value = themeColorData.value.result + '4D';
 }
 
 // 開啟主題更改視窗
@@ -884,15 +881,10 @@ async function applyTheme(theme) {
         alert(`等級不足！需要 Lv.${theme.unlock_level} 才能使用`);
         return;
     }
-    else if (currentThemeColor.value === theme.bg_color) 
-    {
-        alert('目前已使用此主題');
-        return;
-    }
-
-    try 
-    {
-        await $fetch(`${apiBase}/flashCard/${id}/theme`, {
+    
+    try {
+        await $fetch(`${apiBase}/flashCard/${id}/theme`, 
+        {
             method: 'PUT',
             body: { theme_id: theme.id },
             credentials: 'include',
@@ -902,7 +894,7 @@ async function applyTheme(theme) {
             }
         });
 
-        currentThemeColor.value = theme.bg_color;
+        currentThemeColor.value = theme.bg_color + '4D';
         
         const modalEl = document.getElementById('themeModal');
         const modalInstance = $bootstrap.Modal.getInstance(modalEl);
@@ -911,37 +903,6 @@ async function applyTheme(theme) {
     catch (e) 
     {
         console.error('更換主題失敗', e);
-    }
-}
-
-// 恢復預設主題
-async function resetToDefault() {
-    if (currentThemeColor.value.toLowerCase() === '#ffffff') 
-    {
-        alert('目前已是預設主題');
-        return;
-    }
-
-    try 
-    {
-        await $fetch(`${apiBase}/flashCard/${id}/theme`, {
-            method: 'DELETE',
-            credentials: 'include',
-            headers: {
-                'X-XSRF-TOKEN': useCookie('XSRF-TOKEN').value,
-                'Accept': 'application/json'
-            }
-        });
-
-        currentThemeColor.value = '#FFFFFF';
-        
-        const modalEl = document.getElementById('themeModal');
-        const modalInstance = $bootstrap.Modal.getInstance(modalEl);
-        modalInstance.hide();
-    } 
-    catch (e) 
-    {
-        console.error('恢復預設失敗', e);
     }
 }
 </script>
