@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Helpers\ReturnHelper;
 use App\Services\ThemeService;
 
 class ThemeController extends Controller
@@ -15,31 +14,24 @@ class ThemeController extends Controller
     }
 
     public function getCurrentTheme(Request $request, $flashCardId) {
-        $result = $this->themeService->getCurrentTheme($request, $flashCardId);
-
-        return ReturnHelper::controllerReturn((object)$result);
+        return response()->json([
+            'result' => $this->themeService->getCurrentTheme($request, $flashCardId),
+        ]);
     }
 
     public function getThemeList(Request $request) {
-        $result = $this->themeService->getThemeList($request);
-
-        return ReturnHelper::controllerReturn((object)$result);
+        return response()->json([
+            'result' => $this->themeService->getThemeList($request),
+        ]);
     }
 
     public function updateTheme(Request $request, $flashCardId) {   
-        $themeId = $request->theme_id;
-        if(!$themeId){
-            return ReturnHelper::controllerReturn(['result' => null, 'failState' => 404]);
-        }
+        $request->validate([
+            'theme_id' => ['required', 'integer'],
+        ]);
 
-        $result = $this->themeService->updateTheme($request, $flashCardId, $themeId);
-
-        return ReturnHelper::controllerReturn((object)$result);
-    }
-
-    public function resetTheme(Request $request, $flashCardId) {
-        $result = $this->themeService->resetTheme($request, $flashCardId);
-        
-        return ReturnHelper::controllerReturn((object)$result);
+        return response()->json([
+            'result' => $this->themeService->updateTheme($request, $flashCardId, $request->theme_id),
+        ]);
     }
 }

@@ -23,7 +23,7 @@ Route::prefix('flashCard')->group(function () {
     
     # TODO: get theme list
     Route::get('/theme', [ThemeController::class, 'getThemeList'])->middleware('auth:sanctum');
-    Route::get('/theme/settings', [ThemeController::class, 'getUserThemeSettings'])->middleware('auth:sanctum');
+    // Route::get('/theme/settings', [ThemeController::class, 'getUserThemeSettings'])->middleware('auth:sanctum');
 
     Route::get('/{id}', [FlashCardSetController::class, 'show']);
     Route::get('/details/{id}', [FlashCardSetController::class, 'showDetails']);
@@ -34,7 +34,6 @@ Route::prefix('flashCard')->group(function () {
     # TODO: update theme
     # put 時 body 要附上 {theme_id: XX}
     Route::put('/{flashCardId}/theme', [ThemeController::class, 'updateTheme'])->middleware('auth:sanctum');
-    Route::delete('/{flashCardId}/theme', [ThemeController::class, 'resetTheme'])->middleware('auth:sanctum');
 });
 
 Route::prefix('google-tts')->group(function () {

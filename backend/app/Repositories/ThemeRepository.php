@@ -29,15 +29,13 @@ class ThemeRepository
         return $newUserThemeSetting;
     }
 
-    public function getCurrentTheme($userId, $flashCardId) {
-        $setting = $this->userThemeSetting
-                    ->with('theme')
-                    ->where('user_id', $userId)
-                    ->where('flash_card_set_id', $flashCardId)
-                    ->first();
+    public function getCurrentTheme($flashCardId) {
+        $flashCard = $this->userThemeSetting
+                ->with('theme')
+                ->where('flash_card_set_id', $flashCardId)
+                ->firstOrFail();
 
-        # 如果有設定，回傳設定的顏色；如果沒有，回傳預設白色
-        return $setting ? $setting->theme->bg_color : '#FFFFFF';
+        return $flashCard->theme->bg_color;
     }
 
     public function getThemeList() {
@@ -49,24 +47,14 @@ class ThemeRepository
     }
 
     public function updateTheme($userId, $flashCardId, $themeId) {
-        $result = $this->userThemeSetting
-                    ->where('user_id', $userId)
-                    ->where('flash_card_set_id', $flashCardId)
-                    ->update(['theme_id' => $themeId]);
-
-        # $result 會是受影響筆數 => 成功時一定大於 0
-        if ($result > 0) {
-            return 'success';
-        } else {
-            $this->flashCardSetInit($userId, $flashCardId);
-            return 'success';
-        }
-    }
-
-    public function resetTheme($userId, $flashCardId) {
-        return $this->userThemeSetting
+        $setting = $this->userThemeSetting
             ->where('user_id', $userId)
             ->where('flash_card_set_id', $flashCardId)
-            ->delete();
+            ->firstOrFail();
+
+        $setting->theme_id = $themeId;
+        $setting->save();
+
+        return $setting;
     }
 }
