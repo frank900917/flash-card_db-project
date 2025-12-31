@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Repositories\ThemeRepository;
 use App\Repositories\LevelExpMapRepository;
 use App\Repositories\FlashCardSetRepository;
@@ -23,32 +25,37 @@ class ThemeService
 
     public function getCurrentTheme(Request $request, $flashCardId) {
         $userId = $request->user()?->id;
-        if (is_null($userId)) {
-            return ['result' => $this->themeRepository->getCurrentTheme(null, $flashCardId),
-                    'successState' => 200,
-                    'failState' => 404];
+        $is_public = $this->flashCardSetRepository->getFlashCardSet($flashCardId)->isPublic;
+        if (is_null($userId) && !$is_public) {
+            throw new HttpException(403, 'No login and the flash card set is not public.');
         }
-        else {
-            return ['result' => $this->themeRepository->getCurrentTheme($userId, $flashCardId),
-                    'successState' => 200,
-                    'failState' => 404];
+
+        $theme = $this->themeRepository->getCurrentTheme($flashCardId);
+        if (!$theme) {
+            throw new ModelNotFoundException('Theme not found');
         }
+
+        return $theme;
     }
 
     public function getThemeList(Request $request) {
         $user = $request->user();
+        if (!$user) {
+            throw new HttpException(401, 'Uncertified');
+        }
+
         $userLevel = $this->levelExpMapRepository->getLevel($user->exp);
         if (!$userLevel) {
-            return ['result' => null, 'failState' => 500];
+            throw new \RuntimeException('Level map error');
         }
 
         $themeList = $this->themeRepository->getThemeList();
         if (!$themeList) {
-            return ['result' => null, 'failState' => 500];
+            throw new \RuntimeException('Theme list error');
         }
         
         $currentLevel = $userLevel->level;
-        $themeList = $themeList->map(function ($theme) use ($currentLevel) {
+        return $themeList->map(function ($theme) use ($currentLevel) {
             $isActivate = ($theme->unlock_level <= $currentLevel);
             $themeArray = $theme->toArray();
             unset($themeArray['created_at']);
@@ -57,8 +64,6 @@ class ThemeService
             
             return $themeArray;
         });
-
-        return ['result' => $themeList, 'successState' => 200];
     }
 
     public function updateTheme(Request $request, $flashCardId, $themeId) {
@@ -66,19 +71,13 @@ class ThemeService
         $theme = $this->themeRepository->getTheme($themeId);
 
         if (!$theme) {
-            return ['result' => 'Theme not found', 'failState' => 404];
+            throw new ModelNotFoundException('Theme not found');
         }
 
         if ($theme->unlock_level > (int)$user->exp) {
-            return ['result' => 'Level not enough', 'failState' => 403];
+            throw new AuthorizationException('Level not enough');
         }
 
-        $this->themeRepository->updateTheme($user->id, $flashCardId, $themeId);
-
-        return [
-            'result' => 'success',
-            'successState' => 200,
-            'failState' => 403
-        ];
+        return $this->themeRepository->updateTheme($user->id, $flashCardId, $themeId);
     }
 }

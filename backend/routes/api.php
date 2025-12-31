@@ -23,7 +23,7 @@ Route::prefix('flashCard')->group(function () {
     
     # TODO: get theme list
     Route::get('/theme', [ThemeController::class, 'getThemeList'])->middleware('auth:sanctum');
-    Route::get('/theme/settings', [ThemeController::class, 'getUserThemeSettings'])->middleware('auth:sanctum');
+    // Route::get('/theme/settings', [ThemeController::class, 'getUserThemeSettings'])->middleware('auth:sanctum');
 
     Route::get('/{id}', [FlashCardSetController::class, 'show']);
     Route::get('/details/{id}', [FlashCardSetController::class, 'showDetails']);
