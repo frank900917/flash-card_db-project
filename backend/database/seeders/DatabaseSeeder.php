@@ -34,6 +34,16 @@ class DatabaseSeeder extends Seeder
                 ['unlock_level' => 10],
             )
             ->create();
+        
+        $theme = Theme::find(1);
+
+        if ($theme) {
+            $theme->update([
+                'name' => 'default',
+                'bg_color' => '#ffffff',
+                'desc' => 'default'
+            ]);
+        }
 
         $minThemeId = Theme::min('id');
 
